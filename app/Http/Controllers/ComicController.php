@@ -1,153 +1,77 @@
 <?php
+
 namespace App\Http\Controllers;
 
+use App\Services\ComicVineService;
+use App\Models\ReadingList;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 
 class ComicController extends Controller
 {
+    public function __construct(private ComicVineService $cv) {}
 
-    // Method to show the list of comics
-    public function index(Request $request)
+    public function index()
     {
-        $timestamp = time();
-        $publicKey = "dfb0f50315bf6369eb209d35020cf6f3";
-        $privateKey = "b2d45cbb2af82b2028b987c60565c1a73d4c4f52";
-        $hash = md5($timestamp . $privateKey . $publicKey);
-        $limit = 12;
+        $result   = $this->cv->getIssues(12, 0);
+        $trending = $result['comics'] ?? [];
 
-        // Make a request to the Marvel API to get the list of comics
-        $response = Http::get("https://gateway.marvel.com/v1/public/comics", [
-            'apikey' => $publicKey,
-            'ts' => $timestamp,
-            'hash' => $hash,
-            'limit' => $limit,
-            'offset' => 0
-        ]);
+        $recentResult = $this->cv->getIssues(12, 12);
+        $recent = $recentResult['comics'] ?? [];
 
-        // Check if the request was successful
-        if ($response->successful()) {
-            $data = $response->json()['data'];
-            $comics = collect($data['results'])->filter(function ($comic) {
-                // Filter out comics that don't have an available image
-                $imageUrl = $comic['thumbnail']['path'] . '/portrait_uncanny.' . $comic['thumbnail']['extension'];
-                return $imageUrl !== 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available/portrait_uncanny.jpg';
-            });
+        $inProgress = collect();
+        if (auth()->check()) {
+            $inProgress = ReadingList::where('user_id', auth()->id())
+                ->where('status', 'reading')
+                ->latest()
+                ->take(8)
+                ->get();
+        }
 
-            return view('dashboard', compact('comics'));
+        $apiConfigured = $this->cv->isConfigured();
+
+        return view('dashboard', compact('trending', 'recent', 'inProgress', 'apiConfigured'));
+    }
+
+    public function explore(Request $request)
+    {
+        $query  = trim($request->input('search', ''));
+        $offset = (int) $request->input('offset', 0);
+        $comics = [];
+        $total  = 0;
+
+        if ($query !== '') {
+            $result = $this->cv->searchIssues($query, 20, $offset);
         } else {
-            return back()->withErrors('Error en la solicitud a la API de Marvel');
+            $result = $this->cv->getIssues(24, $offset);
         }
+        $comics = $result['comics'] ?? [];
+        $total  = $result['total'] ?? 0;
+
+        if ($request->expectsJson()) {
+            return response()->json(['comics' => $comics, 'total' => $total]);
+        }
+
+        return view('explore', compact('comics', 'query', 'total', 'offset'));
     }
 
-    // Method to load more comics
-    public function loadMore(Request $request)
+    public function show(int $id)
     {
-        $search = $request->search;
-        $timestamp = time();
-        $publicKey = "dfb0f50315bf6369eb209d35020cf6f3";
-        $privateKey = "b2d45cbb2af82b2028b987c60565c1a73d4c4f52";
-        $hash = md5($timestamp . $privateKey . $publicKey);
-        $limit = 12;
-        
+        $comic = $this->cv->getIssue($id);
 
-        $offset = $request->offset;
-
-        $parameters = [
-            'apikey' => $publicKey,
-            'ts' => $timestamp,
-            'hash' => $hash,
-            'limit' => $limit,
-            'offset' => $offset
-        ];
-    
-        // Add search parameter if it exists
-        if ($search) {
-            $parameters['titleStartsWith'] = $search;
+        if (!$comic) {
+            abort(404);
         }
-    
-        $response = Http::get("https://gateway.marvel.com/v1/public/comics", $parameters);
 
-        if ($response->successful()) {
-            $data = $response->json()['data'];
-            $comics = collect($data['results'])->filter(function ($comic) {
-                // Filter out comics that don't have an available image
-                $imageUrl = $comic['thumbnail']['path'] . '/portrait_uncanny.' . $comic['thumbnail']['extension'];
-                return $imageUrl !== 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available/portrait_uncanny.jpg';
-            });
-
-            return response()->json($comics->values());
-        } else {
-            return response()->json(['error' => 'Error en la solicitud a la API de Marvel'], 500);
+        $inLibrary = null;
+        if (auth()->check()) {
+            $inLibrary = ReadingList::where('user_id', auth()->id())
+                ->where('comic_id', $id)
+                ->first();
         }
+
+        $related = $this->cv->getIssues(6, 0);
+        $related = $related['comics'] ?? [];
+
+        return view('comic', compact('comic', 'inLibrary', 'related'));
     }
-
-    // Method to search for comics
-    public function search(Request $request)
-    {
-        $search = $request->input('search');
-        $timestamp = time();
-        $publicKey = "dfb0f50315bf6369eb209d35020cf6f3";
-        $privateKey = "b2d45cbb2af82b2028b987c60565c1a73d4c4f52";
-        $hash = md5($timestamp . $privateKey . $publicKey);
-        $limit = 12;
-        $offset = $request->input('offset', 0);
-
-
-        $response = Http::get('https://gateway.marvel.com/v1/public/comics', [
-            'apikey' => $publicKey,
-            'ts' => $timestamp,
-            'hash' => $hash,
-            'limit' => $limit,
-            'offset' => $offset,
-            'titleStartsWith' => $search,
-        ]);
-
-        if ($response->successful()) {
-            $data = $response->json()['data'];
-            $comics = collect($data['results'])->filter(function ($comic) {
-                // Filter out comics that don't have an available image
-                $imageUrl = $comic['thumbnail']['path'] . '/portrait_uncanny.' . $comic['thumbnail']['extension'];
-                return $imageUrl !== 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available/portrait_uncanny.jpg';
-            });
-
-            return view('partials.numbers', compact('comics'));
-        }else {
-            return response()->json(['error' => 'Error en la solicitud a la API de Marvel'], 500);
-        }
-    }
-
-    // Method to show the details of a comic
-    public function show($id)
-    {
-        $timestamp = time();
-        $publicKey = "dfb0f50315bf6369eb209d35020cf6f3";
-        $privateKey = "b2d45cbb2af82b2028b987c60565c1a73d4c4f52";
-        $hash = md5($timestamp . $privateKey . $publicKey);
-
-        $response = Http::get("https://gateway.marvel.com/v1/public/comics/$id", [
-            'apikey' => $publicKey,
-            'ts' => $timestamp,
-            'hash' => $hash,
-        ]);
-
-        if ($response->successful()) {
-            $data = $response->json()['data'];
-            $comic = $data['results'][0];
-
-            // Create a URL to the comic on the Marvel website
-            $marvelUrl = 'https://www.marvel.com/comics/issue/' . $comic['id'] . '/' . $comic['title'] . '?utm_campaign=apiRef&utm_source=' . $publicKey . '&utm_medium=api';
-
-            // Add the Marvel URL to the comic data
-            $comic['urls'][] = [
-                'type' => 'marvel',
-                'url' => $marvelUrl
-            ];
-
-            return view('comic', compact('comic'));
-        } else {
-            return back()->withErrors('Error en la solicitud a la API de Marvel');
-        }
-    }
-
 }

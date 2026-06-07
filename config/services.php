@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'comicvine' => [
+        'api_key'  => env('COMICVINE_API_KEY'),
+        'base_url' => env('COMICVINE_BASE_URL', 'https://comicvine.gamespot.com/api'),
+    ],
+
 ];

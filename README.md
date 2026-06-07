@@ -1,78 +1,86 @@
-## Autor: Sergio Ruiz Martin
-## Fecha de ultima actualizacion: 14/06/2024
+# ComicBloom
 
-# ComicHub
+Una app de descubrimiento y organización de cómics Marvel con estética cute/friendly, inspirada en Spotify.
 
-Este proyecto es una aplicación web construida con Laravel que utiliza la API de Marvel. Cuenta con un buscador, un explorador, una lista de lectura, gestión de usuarios, una página de contacto, una página de "Quiénes somos", y más.
+## Requisitos
 
-## Lista de lectura
+- PHP 8.2+
+- Composer
+- Node.js 18+
+- npm
+- Clave gratuita de [ComicVine API](https://comicvine.gamespot.com/api/)
 
-- **Registro de Usuario:** Tener que loguearse para acceder a la lista de lectura y buscador.
+## Instalación
 
-- **Agregar Cómics:** Añade nuevos cómics a tu lista de lectura con información detallada.
+```bash
+# 1. Instalar dependencias PHP
+composer install
 
-- **Actualizar Estado:** Marca tus cómics como leídos, en progreso o sin leer para mantener un registro de tu progreso de lectura.
+# 2. Instalar dependencias JS
+npm install
 
-- **Eliminar de la Lista:** Elimina cómics de tu lista de lectura cuando lo desees.
+# 3. Configurar entorno
+cp .env.example .env
+php artisan key:generate
 
-## Buscar Comics
+# 4. Añadir tu clave ComicVine en .env
+#    COMICVINE_API_KEY=tu_clave
+#    Regístrate en https://comicvine.gamespot.com/api/
 
-- **Buscar por Personaje:** Busca cómics por personaje de Marvel.
+# 5. Crear la base de datos y migrar
+php artisan migrate
 
-- **Información del Cómic:** Muestra información detallada del cómic como título, paginas, personaje y fecha de publicación una vez que pinches en la foto del comic.
+# 6. Compilar assets
+npm run build
 
-- **Importante:** Intentar buscar por el nombre correcto del personaje o titulo, ya que si no lo es,puede que no te saldra ningun comic.
+# 7. Arrancar servidor
+php artisan serve
+```
 
+Abre http://localhost:8000
 
-## Contacto
+## Estructura principal
 
-- **Página de Contacto:** Puede contactar con nosotros rellenando el formulario de contacto que se encuentra en la página de contacto acto seguido nos llegará un correo con su mensaje y le responderemos lo antes posible.
+```
+app/
+  Services/MarvelApiService.php   — Toda la lógica de la API Marvel
+  Http/Controllers/
+    ComicController.php           — Dashboard, Explorar, Detalle
+    ReadingListController.php     — Biblioteca, favoritos
+    ContactController.php         — Formulario de contacto
+  Models/ReadingList.php          — Modelo con metadatos del cómic
 
-## Quiénes somos
+resources/views/
+  welcome.blade.php               — Landing pública
+  dashboard.blade.php             — Home tipo Spotify
+  explore.blade.php               — Buscador/Explorar
+  comic.blade.php                 — Detalle del cómic
+  reading_list.blade.php          — Mi biblioteca con tabs
+  about_us.blade.php              — Sobre nosotros
+  contact/index.blade.php         — Contacto
+  terms.blade.php                 — Términos
+  layouts/app.blade.php           — Layout con sidebar + bottom nav móvil
+```
 
-- **Página de Quiénes somos:** Puede ver información sobre nosotros en la página de Quiénes somos.
+## Variables de entorno
 
-## Terminos y Condiciones
+```env
+APP_NAME=ComicBloom
 
-- **Página de Terminos y Condiciones:** Puede ver los terminos y condiciones de la página en la página de terminos y condiciones.
+COMICVINE_API_KEY=tu_clave_de_comicvine
+```
 
+## Cambios realizados respecto al original
 
-## Cambiar datos
-
-- **Cambiar Contraseña:** Puede cambiar su contraseña en la página de cambiar datos, para ello debe introducir su contraseña actual y la nueva contraseña que desea poner y repetirla.
-
-- **Cambiar Correo:** Puede cambiar el resto de sus datos pero debera introducir su contraseña actual pero poder cambiarlos.
-
--**Cambiar Foto:** Puede cambiar su foto de perfil en la página de cambiar datos con la nueva foto que desea poner.
-
-- **Autenticación de dos factores:** Puede activar la autenticación de dos factores en la página de cambiar datos, para ello debe introducir su contraseña actual y escanear el codigo QR que le aparece en la página.
-
-- **Sesion Iniciada:** Si cierras el navegador y vuelve a iniciarlo no tendra que volver a iniciar sesion.
-
-## Aprendiendo Laravel
-
-Laravel tiene la documentación más extensa y completa y la biblioteca de tutoriales en video de todos los marcos de aplicaciones web modernas, lo que facilita comenzar con el marco.
-
-## API de Marvel
-
-ComicHub utiliza la API de Marvel para buscar cómics por personajes. Puedes obtener tu clave de API de Marvel en [developer.marvel.com](https://developer.marvel.com).
-
-## Contribuyendo
-
-Gracias por considerar contribuir al proyecto ComicHub! La guía de contribución se puede encontrar en la [documentación de Laravel](https://laravel.com/docs/contributions).
-
-## Código de Conducta
-
-Para asegurar que la comunidad de Laravel sea acogedora para todos, por favor revisa y cumple con el [Código de Conducta](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Vulnerabilidades de Seguridad
-
-Si descubres una vulnerabilidad de seguridad dentro de ComicHub, por favor envía un correo electrónico a Sergio Ruiz a través de [ruizmartinsergio0@gmail.com](mailto:ruizmartinsergio0@gmail.com). Todas las vulnerabilidades de seguridad serán atendidas de inmediato.
-
-## Licencia
-
-El proyecto ComicHub es un software de código abierto con licencia bajo la [licencia MIT](https://opensource.org/licenses/MIT).
-
-## Ver la pagina
-
-Para ver el proyecto en Internet hay que meterse en el enlace [ComicHub](http://188.166.146.80/)
+- **MarvelApiService**: toda la lógica de API extraída del controlador, con caché
+- **ReadingList**: nuevo modelo con `is_favorite` y metadatos (evita N+1 llamadas)
+- **Nueva migración**: añade `title`, `thumbnail_url`, `is_favorite`, `characters`, etc.
+- **Layout sidebar**: diseño tipo Spotify con sidebar desktop y bottom nav móvil
+- **Paleta cute**: colores pastel rosas/morados, tipografía Nunito, cards redondeadas
+- **Dashboard**: carruseles, sección "Continúa leyendo", buscador grande
+- **Explorar**: búsqueda con sugerencias, grid responsive, empty states friendly
+- **Detalle cómic**: acciones completas (favorito, estado, equipo creativo)
+- **Biblioteca con tabs**: Todos / Sin leer / Leyendo / Leídos / Favoritos + ordenación
+- **Landing moderna**: hero visual, features, CTA, footer
+- **Contacto, About, Términos**: rediseñados con el nuevo sistema visual
+- **Claves API en .env**: eliminadas del código fuente

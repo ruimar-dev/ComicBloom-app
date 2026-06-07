@@ -1,46 +1,100 @@
-@import "explore.css";
-@import "show.css";
-@import "reading.css";
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-[x-cloak] {
-    display: none;
+[x-cloak] { display: none !important; }
+
+@layer base {
+    html { font-family: 'Nunito', sans-serif; }
+    body { background-color: #FFF7FB; color: #1F2937; }
+    .dark body { background-color: #1E1B2E; color: #F3F0FF; }
 }
 
-#oscuro { display: none; }
-    @media (prefers-color-scheme: dark) {
-        #claro { display: none; }
-        #oscuro { display: block; }
+@layer components {
+    /* Sidebar */
+    .sidebar {
+        @apply fixed left-0 top-0 h-full w-64 bg-white dark:bg-bloom-dark-alt border-r border-bloom-purple-light dark:border-bloom-dark-card flex flex-col z-40 transition-transform duration-300;
+        box-shadow: 2px 0 20px rgba(184, 146, 255, 0.08);
+    }
+    .sidebar-link {
+        @apply flex items-center gap-3 px-4 py-2.5 rounded-2xl text-bloom-muted dark:text-purple-200 hover:bg-bloom-bgalt dark:hover:bg-bloom-dark-card hover:text-bloom-purple font-semibold transition-all duration-200 text-sm;
+    }
+    .sidebar-link.active {
+        @apply bg-bloom-purple-light dark:bg-bloom-dark-card text-bloom-purple dark:text-bloom-purple;
     }
 
-    footer {
-        background-color: #343a40;
-        color: #22262A;
-        text-align: center;
-        padding: 20px;
-        margin-top: 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 40px;
-        margin-top: 0;
-        overflow: hidden;
+    /* Cards */
+    .comic-card {
+        @apply relative bg-white dark:bg-bloom-dark-card rounded-3xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1 cursor-pointer;
     }
-    
-    .footer_c {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 25px;
-        font-size: 14px;
+    .comic-card img {
+        @apply w-full object-cover transition-transform duration-300;
+        aspect-ratio: 2/3;
     }
-    
-    .footer_l {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 25px;
-        font-size: 12px;
+    .comic-card:hover img {
+        transform: scale(1.05);
+    }
+    .status-badge {
+        @apply inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold;
+    }
+    .status-unread  { @apply bg-bloom-blue-light text-blue-700; }
+    .status-reading { @apply bg-bloom-yellow text-yellow-800; }
+    .status-read    { @apply bg-bloom-mint text-green-800; }
+    .status-favorite { @apply bg-bloom-pink-light text-pink-700; }
+
+    /* Buttons */
+    .btn-primary {
+        @apply px-5 py-2.5 bg-bloom-purple text-white font-bold rounded-2xl hover:bg-purple-500 transition-all duration-200 shadow-soft hover:shadow-soft-lg hover:-translate-y-0.5 active:translate-y-0;
+    }
+    .btn-secondary {
+        @apply px-5 py-2.5 bg-bloom-purple-light text-bloom-purple font-bold rounded-2xl hover:bg-purple-100 transition-all duration-200;
+    }
+    .btn-pink {
+        @apply px-5 py-2.5 bg-bloom-pink text-white font-bold rounded-2xl hover:bg-pink-400 transition-all duration-200 shadow-soft hover:shadow-soft-lg hover:-translate-y-0.5;
+    }
+    .btn-ghost {
+        @apply px-5 py-2.5 border-2 border-bloom-purple-light text-bloom-purple font-bold rounded-2xl hover:bg-bloom-purple-light transition-all duration-200;
     }
 
+    /* Inputs */
+    .input-cute {
+        @apply w-full px-4 py-3 rounded-2xl border-2 border-bloom-purple-light dark:border-bloom-dark-card bg-white dark:bg-bloom-dark-card text-bloom-text dark:text-white placeholder-bloom-muted focus:outline-none focus:border-bloom-purple transition-colors duration-200;
+    }
+
+    /* Skeleton */
+    .skeleton {
+        @apply animate-pulse bg-gradient-to-r from-bloom-bgalt via-white to-bloom-bgalt dark:from-bloom-dark-card dark:via-bloom-dark-alt dark:to-bloom-dark-card rounded-3xl;
+        background-size: 200% 100%;
+    }
+
+    /* Section title */
+    .section-title {
+        @apply text-xl font-extrabold text-bloom-text dark:text-white mb-4 flex items-center gap-2;
+    }
+
+    /* Carousel */
+    .carousel-scroll {
+        @apply flex gap-4 overflow-x-auto pb-2;
+        scrollbar-width: none;
+    }
+    .carousel-scroll::-webkit-scrollbar { display: none; }
+
+    /* Empty state */
+    .empty-state {
+        @apply flex flex-col items-center justify-center py-16 text-center;
+    }
+
+    /* Mobile bottom nav */
+    .bottom-nav {
+        @apply fixed bottom-0 left-0 right-0 bg-white dark:bg-bloom-dark-alt border-t border-bloom-purple-light dark:border-bloom-dark-card flex justify-around items-center px-2 py-2 z-40 md:hidden;
+        box-shadow: 0 -4px 20px rgba(184, 146, 255, 0.1);
+    }
+    .bottom-nav-item {
+        @apply flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-2xl text-bloom-muted dark:text-purple-300 hover:text-bloom-purple transition-colors duration-200 text-xs font-semibold;
+    }
+    .bottom-nav-item.active {
+        @apply text-bloom-purple;
+    }
+}

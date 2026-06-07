@@ -7,16 +7,8 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/js/app.js',
-                'resources/css/main.css',
-                'resources/js/main.js',
-                'resources/js/style.js',
             ],
             refresh: true,
         }),
     ],
-    resolve: {
-        alias: {
-            $: 'jquery',
-        },
-    },
 });

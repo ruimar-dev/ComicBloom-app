@@ -1,93 +1,114 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-
+<html lang="es">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>ComicHub</title>
-
-    <link rel="icon" href="{{ asset('img/mobile-logo-claro.png') }}" type="image/x-icon" />
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poetsen+One&display=swap" rel="stylesheet">
-    @vite(['resources/css/main.css', 'resources/js/style.js'])
-    <!-- Styles -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    
-
+    <title>ComicBloom — Descubre el universo Marvel</title>
+    <link rel="icon" href="{{ asset('img/mobile-logo-claro.png') }}" type="image/png">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
+<body class="antialiased bg-bloom-bg dark:bg-bloom-dark min-h-screen">
 
-<body class="font-sans antialiased dark:bg-#eee dark:text-white/50">
-    <div class="bg-gray-50 text-black/50 dark:bg-#eee dark:text-white/50">
-        <div
-            class="relative min-h-screen flex flex-col items-center justify-center selection:bg-[#FF2D20] selection:text-white">
-            <div class="relative w-full max-w-full lg:max-w-full">
-                @include('header')
+{{-- Nav --}}
+<nav class="sticky top-0 z-50 bg-white/80 dark:bg-bloom-dark-alt/80 backdrop-blur-md border-b border-bloom-purple-light dark:border-bloom-dark-card">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-bloom-pink to-bloom-purple flex items-center justify-center text-white font-extrabold text-sm">CB</div>
+            <span class="font-extrabold text-bloom-text dark:text-white text-lg">ComicBloom</span>
+        </div>
+        <div class="flex items-center gap-3">
+            @auth
+            <a href="{{ route('dashboard') }}" class="btn-primary text-sm">Ir al inicio</a>
+            @else
+            <a href="{{ route('login') }}" class="btn-ghost text-sm">Entrar</a>
+            <a href="{{ route('register') }}" class="btn-pink text-sm">Empezar gratis</a>
+            @endauth
+        </div>
+    </div>
+</nav>
 
-                <main class="mt-6 ">
-                    <h1 class="title">Encuentra y ordena tus cómics indispensables dentro del vasto universo Marvel
-                    </h1>
-                    <section class="hero">
-                        <div>
-                            <h2>Explora el universo Marvel con ComicHub</h2>
-                            <p>Bienvenido a ComicHub, tu destino definitivo para explorar y disfrutar de los cómics más
-                                emocionantes de Marvel. Sumérgete en historias épicas, descubre nuevos personajes y
-                                sigue las aventuras de tus héroes favoritos.</p>
-                        </div>
-                        <div class="imagenes">
-                            <img src="{{ asset('img/iluminati.png') }}" alt="">
-                        </div>
-                    </section>
-                    <section class="search-section">
-                        <div class="imagenes">
-                            <img src="{{ asset('img/Portada-del-cómic-dedicada-a-la-Fuengirola-Comic-Con.jpeg') }}"
-                                alt="">
-                        </div>
-                        <div>
-                            <h2>Encuentra tus cómics favoritos fácilmente</h2>
-                            <p>Con ComicHub, la búsqueda de tus cómics favoritos es más sencilla que nunca. Utiliza
-                                nuestra potente herramienta de búsqueda para encontrar rápidamente los cómics que te
-                                interesan. Filtra por personajes, escritores, series o cualquier otra palabra clave que
-                                desees.</p>
-                            <p>Explora nuestro extenso catálogo y descubre nuevas joyas del universo Marvel. Ya sea que
-                                busques cómics clásicos, eventos épicos o las últimas novedades, ComicHub tiene todo lo
-                                que necesitas para satisfacer tu pasión por los cómics.</p>
-                        </div>
-                    </section>
-                    <section>
-                        <div class="register-section">
-                            <div>
-                                <h2>Regístrate para una experiencia personalizada</h2>
-                                <p>Únete a ComicHub y disfruta de beneficios exclusivos. Regístrate para crear tu lista
-                                    de lectura personalizada, donde podrás organizar y hacer un seguimiento de tus
-                                    cómics favoritos, marcar los que has leído o planear leer en el futuro. Además
-                                    estarás al tanto de las últimas novedades del universo Marvel.</p>
-                            </div>
-                            <div class="imagenes">
-                                <img src="{{ asset('img/portada.png') }}" alt="">
-                            </div>
-                        </div>
-                        <di class="register">
-                            <a href="{{ route('register') }}" class="section__register">Registrarse</a>
-                        </di>
-                    </section>
-
-                    <section class="contact-section">
-                        <h2>¿Necesitas ayuda o tienes alguna pregunta?</h2>
-                        <p>Estamos aquí para ayudarte. Contáctanos para resolver tus dudas, recibir asistencia técnica o
-                            proporcionarnos tus comentarios. Tu opinión es importante para nosotros.</p>
-                        <a href="{{ route('contact.index') }}" class="section__link">Contactar</a>
-                    </section>
-                </main>
-
-                @include('footer')
+{{-- Hero --}}
+<section class="max-w-6xl mx-auto px-6 py-20 md:py-28 flex flex-col md:flex-row items-center gap-12">
+    <div class="flex-1 text-center md:text-left">
+        <div class="inline-flex items-center gap-2 px-4 py-2 bg-bloom-purple-light dark:bg-bloom-dark-card text-bloom-purple text-sm font-bold rounded-full mb-6">
+            ✨ Tu plataforma de cómics Marvel
+        </div>
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-bloom-text dark:text-white leading-tight mb-6">
+            Descubre, guarda<br>y organiza tus<br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-bloom-pink to-bloom-purple">cómics favoritos</span>
+        </h1>
+        <p class="text-lg text-bloom-muted dark:text-purple-200 mb-8 max-w-lg">
+            Explora el universo Marvel, crea tu biblioteca personal y sigue tu progreso de lectura. Todo en un solo lugar.
+        </p>
+        <div class="flex flex-wrap gap-3 justify-center md:justify-start">
+            <a href="{{ route('register') }}" class="btn-pink text-base">Empezar gratis</a>
+            <a href="{{ route('explore') }}" class="btn-ghost text-base">Explorar demo</a>
+        </div>
+    </div>
+    <div class="flex-none flex gap-4 md:gap-3">
+        <div class="flex flex-col gap-4 mt-8 md:mt-0">
+            <div class="w-32 md:w-36 rounded-3xl overflow-hidden shadow-soft-lg rotate-[-4deg] hover:rotate-0 transition-transform duration-300">
+                <img src="https://i.annihil.us/u/prod/marvel/i/mg/c/80/52cbbc8b9c4cc/portrait_uncanny.jpg" alt="Comic" class="w-full" onerror="this.src='{{ asset('img/portada.png') }}'">
+            </div>
+            <div class="w-32 md:w-36 rounded-3xl overflow-hidden shadow-soft-lg rotate-[3deg] hover:rotate-0 transition-transform duration-300">
+                <img src="https://i.annihil.us/u/prod/marvel/i/mg/9/c0/515523f9c3c50/portrait_uncanny.jpg" alt="Comic" class="w-full" onerror="this.src='{{ asset('img/iluminati.png') }}'">
+            </div>
+        </div>
+        <div class="flex flex-col gap-4 mt-[-16px]">
+            <div class="w-32 md:w-36 rounded-3xl overflow-hidden shadow-soft-lg rotate-[2deg] hover:rotate-0 transition-transform duration-300">
+                <img src="https://i.annihil.us/u/prod/marvel/i/mg/3/40/4bb4680432f73/portrait_uncanny.jpg" alt="Comic" class="w-full" onerror="this.src='{{ asset('img/portada.png') }}'">
             </div>
         </div>
     </div>
+</section>
+
+{{-- Features --}}
+<section class="bg-white dark:bg-bloom-dark-alt py-16 md:py-20">
+    <div class="max-w-6xl mx-auto px-6">
+        <h2 class="text-3xl font-extrabold text-center text-bloom-text dark:text-white mb-12">Todo lo que necesitas</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            @foreach ([
+                ['🔍', 'Descubre', 'Explora miles de cómics del universo Marvel con un buscador potente.', 'from-bloom-blue to-bloom-purple'],
+                ['📚', 'Organiza', 'Crea tu biblioteca personal y clasifica tus cómics como quieras.', 'from-bloom-purple to-bloom-pink'],
+                ['📖', 'Sigue tu progreso', 'Marca tus cómics como Sin leer, Leyendo o Leído fácilmente.', 'from-bloom-pink to-bloom-yellow'],
+                ['❤️', 'Guarda favoritos', 'Marca tus cómics favoritos para encontrarlos siempre a mano.', 'from-bloom-yellow to-bloom-mint'],
+            ] as [$icon, $title, $desc, $gradient])
+            <div class="bg-bloom-bg dark:bg-bloom-dark-card rounded-3xl p-6 hover:shadow-card-hover transition-shadow duration-300">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br {{ $gradient }} flex items-center justify-center text-2xl mb-4">{{ $icon }}</div>
+                <h3 class="font-extrabold text-bloom-text dark:text-white mb-2">{{ $title }}</h3>
+                <p class="text-bloom-muted dark:text-purple-300 text-sm leading-relaxed">{{ $desc }}</p>
+            </div>
+            @endforeach
+        </div>
+    </div>
+</section>
+
+{{-- CTA --}}
+<section class="max-w-6xl mx-auto px-6 py-20 text-center">
+    <div class="bg-gradient-to-r from-bloom-purple to-bloom-pink rounded-4xl p-12 text-white">
+        <h2 class="text-3xl md:text-4xl font-extrabold mb-4">¿Listo para explorar?</h2>
+        <p class="text-white/80 text-lg mb-8">Únete gratis y empieza a construir tu biblioteca Marvel hoy.</p>
+        <a href="{{ route('register') }}" class="inline-block px-8 py-4 bg-white text-bloom-purple font-extrabold rounded-2xl hover:bg-bloom-bg transition-colors text-base shadow-soft-lg">
+            Crear cuenta gratis
+        </a>
+    </div>
+</section>
+
+{{-- Footer --}}
+<footer class="bg-white dark:bg-bloom-dark-alt border-t border-bloom-purple-light dark:border-bloom-dark-card py-8">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-2">
+            <div class="w-7 h-7 rounded-xl bg-gradient-to-br from-bloom-pink to-bloom-purple flex items-center justify-center text-white font-extrabold text-xs">CB</div>
+            <span class="font-extrabold text-bloom-text dark:text-white">ComicBloom</span>
+        </div>
+        <div class="flex gap-6 text-sm text-bloom-muted dark:text-purple-300">
+            <a href="{{ route('about') }}" class="hover:text-bloom-purple transition-colors">Sobre nosotros</a>
+            <a href="{{ route('contact.index') }}" class="hover:text-bloom-purple transition-colors">Contacto</a>
+            <a href="{{ route('terms') }}" class="hover:text-bloom-purple transition-colors">Términos</a>
+        </div>
+        <p class="text-xs text-bloom-muted">© {{ date('Y') }} ComicBloom. Datos de Marvel.</p>
+    </div>
+</footer>
+
 </body>
 </html>
