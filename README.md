@@ -1,6 +1,6 @@
 # ComicBloom
 
-Una app de descubrimiento y organización de cómics Marvel con estética friendly.
+Una app de descubrimiento y organización de cómics Marvel con estética limpia.
 
 ## Requisitos
 
