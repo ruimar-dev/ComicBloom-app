@@ -1,6 +1,6 @@
 # ComicBloom
 
-Una app de descubrimiento y organización de cómics Marvel con estética cute/friendly, inspirada en Spotify.
+Una app de descubrimiento y organización de cómics Marvel con estética friendly.
 
 ## Requisitos
 
